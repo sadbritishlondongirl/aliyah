@@ -1,23 +1,28 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aaliyah AI</title>
+  <link rel="icon" type="image/png" href="icon.png">
   <style>
-    /* Общие стили */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background: #f0fcff; font-family: Arial, sans-serif; }
-    /* Канвас частиц на заднем фоне */
-    canvas#particles {
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f8faff;
+      color: #333;
+    }
+
+    canvas {
       position: absolute;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
+      z-index: 0;
     }
-    /* Контейнер с контентом */
+
     .content {
       position: relative;
       z-index: 1;
@@ -25,101 +30,114 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100%;
-      color: #333;
+      height: 100vh;
       text-align: center;
-      pointer-events: none;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
     }
-    .content img {
-      width: 120px;
-      height: 120px;
+
+    .logo {
+      width: 100px;
+      height: 100px;
       margin-bottom: 20px;
+      animation: float 3s ease-in-out infinite;
     }
-    .content h1 {
-      font-size: 3rem;
-      margin-bottom: 10px;
+
+    h1 {
+      font-size: 3em;
+      color: #007acc;
+      margin: 0;
+      animation: fadeIn 2s ease-in;
     }
-    .content p {
-      font-size: 1.2rem;
-      max-width: 400px;
+
+    p {
+      font-size: 1.2em;
+      margin-top: 10px;
+      animation: fadeIn 3s ease-in;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
   </style>
 </head>
 <body>
-  <!-- Логотип (замените DATA_URI_HERE на ваш base64 код icon.png) -->
-  <div class="content">
-    <img src="data:image/png;base64,DATA_URI_HERE" alt="Aaliyah AI Logo" />
-    <h1>Добро пожаловать в Aaliyah AI</h1>
-    <p>Инновационная платформа искусственного интеллекта для ваших самых смелых идей.</p>
-  </div>
   <canvas id="particles"></canvas>
+  <div class="content">
+    <img src="icon.png" alt="Aaliyah AI Logo" class="logo">
+    <h1>Aaliyah AI</h1>
+    <p>Your intelligent companion with elegance and light.</p>
+  </div>
+
   <script>
-    // Настройка канваса
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
-    let particlesArray;
-    const colors = ['rgba(102, 204, 255, 0.7)', 'rgba(153, 229, 255, 0.7)', 'rgba(204, 255, 255, 0.7)'];
-    const numParticles = 120;
 
-    // Размер канваса под размер окна
-    function initCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', () => {
-      initCanvas();
-      initParticles();
-    });
-    initCanvas();
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
 
-    // Класс частицы
+    const particles = [];
+    const particleCount = 100;
+
     class Particle {
       constructor() {
         this.reset();
       }
+
       reset() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 3 + 1;
-        this.speedX = (Math.random() - 0.5) * 0.5;
-        this.speedY = (Math.random() - 0.5) * 0.5;
-        this.color = colors[Math.floor(Math.random() * colors.length)];
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.vx = (Math.random() - 0.5) * 0.8;
+        this.vy = (Math.random() - 0.5) * 0.8;
+        this.radius = Math.random() * 2 + 1;
+        this.alpha = Math.random() * 0.5 + 0.3;
       }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0, 174, 255, ${this.alpha})`;
+        ctx.fill();
+      }
+
       update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        // При выходе за границы — вернуть
-        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
           this.reset();
         }
       }
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = this.color;
-        ctx.fill();
-      }
     }
 
-    // Инициализация частиц
-    function initParticles() {
-      particlesArray = [];
-      for (let i = 0; i < numParticles; i++) {
-        particlesArray.push(new Particle());
-      }
+    for (let i = 0; i < particleCount; i++) {
+      particles.push(new Particle());
     }
-    initParticles();
 
-    // Анимация
     function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particlesArray.forEach(p => {
+      ctx.clearRect(0, 0, width, height);
+
+      for (const p of particles) {
         p.update();
         p.draw();
-      });
+      }
+
       requestAnimationFrame(animate);
     }
+
     animate();
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
   </script>
 </body>
 </html>

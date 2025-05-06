@@ -1,85 +1,104 @@
 <!DOCTYPE html>
-<html lang="en" class="bg-black text-white">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aaliyah AI</title>
-  <link rel="icon" type="image/png" href="icon.png" />
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
       overflow: hidden;
-      background-color: black;
-    }
-    .pixel-bg {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
+      height: 100%;
       background: black;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
       z-index: -1;
     }
-    canvas {
-      display: block;
+
+    .content {
+      position: relative;
+      z-index: 10;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .logo {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 48px;
+      height: 48px;
+      opacity: 0.9;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.1em;
+    }
+
+    p {
+      font-size: 1.2rem;
+      max-width: 600px;
+      opacity: 0.75;
     }
   </style>
 </head>
-<body class="relative font-sans">
-
-  <!-- Animated Pixel Background -->
-  <canvas id="pixelCanvas" class="pixel-bg"></canvas>
-
-  <!-- Main Content -->
-  <div class="z-10 flex flex-col items-center justify-center min-h-screen text-center">
-    <img src="icon.png" alt="Aaliyah AI Logo" class="w-24 h-24 mb-6"/>
-    <h1 class="text-4xl font-bold tracking-wide">Aaliyah AI</h1>
-    <p class="text-gray-400 mt-2">Intelligent. Intuitive. Invisible.</p>
+<body>
+  <canvas id="background"></canvas>
+  <img src="icon.png" alt="Aaliyah AI Logo" class="logo" />
+  <div class="content">
+    <h1>Aaliyah AI</h1>
+    <p>Intelligence crafted in shadow. Precision, power, and elegance — redefined.</p>
   </div>
 
-  <!-- Pixel Animation Script -->
   <script>
-    const canvas = document.getElementById('pixelCanvas');
+    const canvas = document.getElementById('background');
     const ctx = canvas.getContext('2d');
 
-    function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const columns = canvas.width / 20;
+    const drops = Array(Math.floor(columns)).fill(1);
+
+    function draw() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#00ffcc'; // Aqua-glow color
+      ctx.font = '16px monospace';
+
+      for (let i = 0; i < drops.length; i++) {
+        const char = String.fromCharCode(0x30A0 + Math.random() * 96); // Katakana-like
+        ctx.fillText(char, i * 20, drops[i] * 20);
+
+        if (drops[i] * 20 > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+
+        drops[i]++;
+      }
+    }
+
+    setInterval(draw, 50);
+
+    window.addEventListener('resize', () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-    }
-
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    let pixels = [];
-
-    for (let i = 0; i < 200; i++) {
-      pixels.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        size: Math.random() * 2 + 1,
-        speed: Math.random() * 0.5 + 0.2,
-        alpha: Math.random() * 0.5 + 0.3,
-      });
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (let pixel of pixels) {
-        ctx.fillStyle = `rgba(255, 255, 255, ${pixel.alpha})`;
-        ctx.fillRect(pixel.x, pixel.y, pixel.size, pixel.size);
-
-        pixel.y += pixel.speed;
-        if (pixel.y > canvas.height) {
-          pixel.y = 0;
-          pixel.x = Math.random() * canvas.width;
-        }
-      }
-
-      requestAnimationFrame(animate);
-    }
-
-    animate();
+    });
   </script>
 </body>
 </html>

@@ -119,8 +119,8 @@
     }
 
     function getNoise(x, y) {
-      const xi = Math.floor(x) % width;
-      const yi = Math.floor(y) % height;
+      const xi = ((Math.floor(x) % width) + width) % width;
+      const yi = ((Math.floor(y) % height) + height) % height;
       return noise[yi] ? (noise[yi][xi] || 0) : 0;
     }
 

@@ -4,51 +4,53 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aaliyah AI</title>
+  <link rel="icon" type="image/png" href="icon.png">
   <style>
-    * {
+    html, body {
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    body, html {
       height: 100%;
       overflow: hidden;
-      background-color: #ffffff;
-      color: #000;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4ff;
+      color: #333;
     }
 
-    canvas {
-      position: absolute;
+    canvas#background {
+      position: fixed;
       top: 0;
       left: 0;
       z-index: -1;
     }
 
-    header {
+    .content {
       position: relative;
+      z-index: 1;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       text-align: center;
-      padding-top: 20vh;
-      animation: fadeIn 2s ease-out;
-    }
-
-    header img {
-      width: 80px;
-      height: 80px;
-      animation: float 3s ease-in-out infinite;
+      animation: fadeIn 3s ease-in-out;
     }
 
     h1 {
-      font-size: 3em;
-      margin-top: 1rem;
-      animation: fadeInUp 2.5s ease-out;
+      font-size: 3rem;
+      margin: 0.5em 0;
+      animation: floatText 4s infinite ease-in-out alternate;
     }
 
     p {
-      font-size: 1.2em;
-      margin-top: 0.5rem;
-      animation: fadeInUp 3s ease-out;
+      font-size: 1.2rem;
+      max-width: 600px;
+      animation: fadeInUp 3s ease;
+    }
+
+    img {
+      width: 100px;
+      height: 100px;
+      animation: fadeInRotate 3s ease-in-out;
     }
 
     @keyframes fadeIn {
@@ -57,91 +59,87 @@
     }
 
     @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(40px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+    @keyframes floatText {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-10px); }
+    }
+
+    @keyframes fadeInRotate {
+      from { opacity: 0; transform: rotate(-20deg) scale(0.8); }
+      to { opacity: 1; transform: rotate(0deg) scale(1); }
     }
   </style>
 </head>
 <body>
-  <canvas id="bg"></canvas>
-  <header>
-    <img src="icon.png" alt="Aaliyah AI Logo">
-    <h1>Aaliyah AI</h1>
-    <p>Intelligence. Elegance. Simplicity.</p>
-  </header>
+  <canvas id="background"></canvas>
+  <div class="content">
+    <img src="icon.png" alt="Aaliyah AI Logo" />
+    <h1>Welcome to Aaliyah AI</h1>
+    <p>Exploring the future of artificial intelligence with elegance and clarity.</p>
+  </div>
 
   <script>
-    const canvas = document.getElementById('bg');
+    const canvas = document.getElementById('background');
     const ctx = canvas.getContext('2d');
-
     let width, height;
     let pixels = [];
-    const pixelSize = 6;
-    const density = 0.12;
-    const waves = [];
+    const pixelSize = 2;
+    const pixelCount = 6000;
 
     function resize() {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
       pixels = [];
-      const cols = Math.floor(width / pixelSize);
-      const rows = Math.floor(height / pixelSize);
-      for (let i = 0; i < cols * rows * density; i++) {
+      for (let i = 0; i < pixelCount; i++) {
         pixels.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
-          size: pixelSize,
-          opacity: Math.random() * 0.6 + 0.3
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          alpha: Math.random(),
+          phase: Math.random() * Math.PI * 2
         });
-      }
-      for (let i = 0; i < 3; i++) {
-        waves.push({ x: Math.random() * width, y: Math.random() * height, r: 0 });
       }
     }
 
     function animate() {
       ctx.clearRect(0, 0, width, height);
+      for (let p of pixels) {
+        p.phase += 0.02;
+        p.alpha = 0.5 + 0.5 * Math.sin(p.phase);
 
-      // Pixel animation
-      for (let pixel of pixels) {
-        pixel.x += pixel.vx;
-        pixel.y += pixel.vy;
+        ctx.fillStyle = `rgba(100, 150, 255, ${p.alpha})`;
+        ctx.fillRect(p.x, p.y, pixelSize, pixelSize);
 
-        if (pixel.x < 0 || pixel.x > width) pixel.vx *= -1;
-        if (pixel.y < 0 || pixel.y > height) pixel.vy *= -1;
+        p.x += p.vx;
+        p.y += p.vy;
 
-        ctx.fillStyle = `rgba(0, 0, 0, ${pixel.opacity})`;
-        ctx.fillRect(pixel.x, pixel.y, pixel.size, pixel.size);
+        if (p.x < 0 || p.x > width) p.vx *= -1;
+        if (p.y < 0 || p.y > height) p.vy *= -1;
       }
-
-      // Ripple wave effect
-      for (let wave of waves) {
-        wave.r += 0.5;
-        if (wave.r > 100) {
-          wave.x = Math.random() * width;
-          wave.y = Math.random() * height;
-          wave.r = 0;
-        }
-        ctx.beginPath();
-        ctx.arc(wave.x, wave.y, wave.r, 0, 2 * Math.PI);
-        ctx.strokeStyle = `rgba(0,0,0,${1 - wave.r / 100})`;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
-
       requestAnimationFrame(animate);
     }
 
     window.addEventListener('resize', resize);
     resize();
     animate();
+
+    // Background interactivity (optional visual enhancements)
+    document.addEventListener('mousemove', e => {
+      for (let p of pixels) {
+        const dx = e.clientX - p.x;
+        const dy = e.clientY - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 50) {
+          p.vx += dx * 0.0001;
+          p.vy += dy * 0.0001;
+        }
+      }
+    });
   </script>
 </body>
 </html>

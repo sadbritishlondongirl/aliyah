@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Aaliyah AI</title>
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lottie Player -->
   <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
   <style>
     body {
@@ -21,33 +23,9 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      z-index: -2;
-      opacity: 0.3;
-      pointer-events: none;
-    }
-    #cursor-trail {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
       z-index: -1;
+      opacity: 0.2;
       pointer-events: none;
-    }
-    .trail-dot {
-      position: absolute;
-      width: 6px;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 50%;
-      pointer-events: none;
-      animation: fadeOut 1s linear forwards;
-    }
-    @keyframes fadeOut {
-      to {
-        opacity: 0;
-        transform: scale(2);
-      }
     }
     .fade-in {
       animation: fadeIn 2s ease-out forwards;
@@ -56,14 +34,28 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    /* Эффект следа за мышью */
+    .trail {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: trailFade 1s linear forwards;
+    }
+    @keyframes trailFade {
+      from { opacity: 1; transform: scale(1); }
+      to { opacity: 0; transform: scale(2); }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Футуристическая анимация -->
+  <!-- Анимированный фон -->
   <div id="bg-animation">
     <lottie-player
-      src="https://assets6.lottiefiles.com/packages/lf20_3vbOcw.json"
+      src="https://assets2.lottiefiles.com/packages/lf20_3vbOcw.json"
       background="transparent"
       speed="1"
       loop
@@ -72,12 +64,9 @@
     </lottie-player>
   </div>
 
-  <!-- Эффект следа за курсором -->
-  <div id="cursor-trail"></div>
-
   <!-- Основной контент -->
   <main class="flex flex-col items-center justify-center min-h-screen text-center px-6 fade-in">
-    <h1 class="text-6xl font-extrabold tracking-wide mb-4 text-white drop-shadow-md">
+    <h1 class="text-6xl font-extrabold tracking-wide mb-4 bg-gradient-to-r from-gray-700 via-white to-gray-700 bg-clip-text text-transparent drop-shadow-md">
       Aaliyah AI
     </h1>
     <p class="text-xl text-gray-300 max-w-xl mb-8 drop-shadow-sm">
@@ -103,19 +92,16 @@
     © 2025 Aaliyah AI. Все права защищены.
   </footer>
 
-  <!-- Скрипт для эффекта следа за курсором -->
+  <!-- Скрипт для эффекта следа за мышью -->
   <script>
-    const trailContainer = document.getElementById('cursor-trail');
-
-    document.addEventListener('mousemove', (e) => {
-      const dot = document.createElement('div');
-      dot.classList.add('trail-dot');
-      dot.style.left = `${e.clientX}px`;
-      dot.style.top = `${e.clientY}px`;
-      trailContainer.appendChild(dot);
-
+    document.addEventListener('mousemove', function(e) {
+      const trail = document.createElement('div');
+      trail.className = 'trail';
+      trail.style.left = e.pageX + 'px';
+      trail.style.top = e.pageY + 'px';
+      document.body.appendChild(trail);
       setTimeout(() => {
-        dot.remove();
+        trail.remove();
       }, 1000);
     });
   </script>

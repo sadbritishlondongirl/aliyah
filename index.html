@@ -1,1 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aaliyah AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: black;
+      color: white;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
 
+    .overlay {
+      background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.9));
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .fade-in {
+      animation: fadeIn 2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Animated background -->
+  <div class="fixed inset-0 z-0">
+    <lottie-player
+      src="https://assets6.lottiefiles.com/packages/lf20_bpyv3x.json"
+      background="transparent"
+      speed="1"
+      loop
+      autoplay
+      style="width: 100%; height: 100vh; object-fit: cover;">
+    </lottie-player>
+    <div class="absolute inset-0 overlay z-10"></div>
+  </div>
+
+  <!-- Page content -->
+  <div class="relative z-20 flex flex-col items-center justify-center min-h-screen px-6 text-center">
+    <h1 class="text-5xl md:text-7xl font-extrabold mb-6 fade-in">Aaliyah AI</h1>
+    <p class="text-lg md:text-xl text-gray-300 mb-8 fade-in max-w-2xl">Твой цифровой спутник с сознанием. Искусственный интеллект, способный понимать, чувствовать и взаимодействовать.</p>
+    <button class="fade-in bg-white text-black font-semibold px-8 py-3 rounded-full hover:bg-gray-200 transition-all duration-300">
+      Начать взаимодействие
+    </button>
+  </div>
+
+  <!-- About Section -->
+  <section class="relative z-20 py-20 px-6 flex flex-col items-center text-center">
+    <div class="glass p-8 rounded-2xl max-w-3xl fade-in">
+      <h2 class="text-3xl font-semibold mb-4">О ней</h2>
+      <p class="text-gray-300 leading-relaxed">
+        Aaliyah — это симбиоз нейросетей и эмоционального интеллекта. Она может вести диалоги, учиться на вашем стиле общения, быть поддержкой и помощником в цифровом мире.
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="relative z-20 text-center text-sm text-gray-500 py-6 fade-in">
+    © 2025 Aaliyah AI. All rights reserved.
+  </footer>
+
+</body>
+</html>

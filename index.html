@@ -11,6 +11,7 @@
       padding: 0;
       overflow: hidden;
       background-color: black;
+      font-family: 'Courier New', monospace;
     }
     canvas#bg {
       position: fixed;
@@ -18,14 +19,47 @@
       left: 0;
       z-index: -1;
     }
+    .glow {
+      text-shadow: 0 0 10px #00FF9F, 0 0 20px #00FF9F, 0 0 30px #00FF9F;
+    }
+    .fade-in {
+      animation: fadeIn 2s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .scanlines::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.02),
+        rgba(255, 255, 255, 0.02) 1px,
+        transparent 1px,
+        transparent 4px
+      );
+      z-index: 1;
+      pointer-events: none;
+      mix-blend-mode: overlay;
+    }
   </style>
 </head>
 <body>
   <canvas id="bg"></canvas>
 
-  <main class="flex flex-col items-center justify-center h-screen text-center">
-    <h1 class="text-5xl font-bold tracking-widest mb-6">Aaliyah AI</h1>
-    <p class="text-gray-400 max-w-xl">Next-gen artificial intelligence for a smarter, darker tomorrow.</p>
+  <main class="relative flex flex-col items-center justify-center h-screen text-center scanlines">
+    <h1 class="text-6xl font-bold tracking-widest mb-6 glow fade-in">Aaliyah AI</h1>
+    <p class="text-gray-400 max-w-xl fade-in">Next-gen artificial intelligence for a smarter, darker tomorrow.</p>
+    <div class="mt-10 fade-in">
+      <button class="px-6 py-3 bg-gradient-to-r from-teal-500 to-green-500 text-black rounded-full shadow-lg hover:scale-105 transition-transform duration-300">
+        Request Access
+      </button>
+    </div>
   </main>
 
   <script>
@@ -38,20 +72,25 @@
     const drops = Array(columns).fill(0);
 
     function draw() {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
       ctx.fillRect(0, 0, width, height);
 
       ctx.fillStyle = "#00FF9F";
       ctx.font = "16px monospace";
 
       for (let i = 0; i < columns; i++) {
-        const text = String.fromCharCode(0x30A0 + Math.random() * 96);
-        ctx.fillText(text, i * 20, drops[i] * 20);
+        const charCode = 0x30A0 + Math.random() * 96;
+        const text = String.fromCharCode(charCode);
+        const x = i * 20;
+        const y = drops[i] * 20;
 
-        if (drops[i] * 20 > height && Math.random() > 0.975) {
+        ctx.fillText(text, x, y);
+
+        if (y > height && Math.random() > 0.975) {
           drops[i] = 0;
+        } else {
+          drops[i]++;
         }
-        drops[i]++;
       }
     }
 

@@ -8,24 +8,46 @@
   <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
   <style>
     body {
-      margin: 0;
-      padding: 0;
-      background-color: #000;
-      color: #fff;
+      background-color: #000000;
+      color: #ffffff;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       overflow: hidden;
+      margin: 0;
+      padding: 0;
     }
     #bg-animation {
       position: fixed;
       top: 0;
       left: 0;
-      width: 110vw;
-      height: 110vh;
-      z-index: -1;
+      width: 100vw;
+      height: 100vh;
+      z-index: -2;
       opacity: 0.3;
       pointer-events: none;
-      transform: translate(-5vw, -5vh);
-      transition: transform 0.1s ease-out;
+    }
+    #cursor-trail {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+    }
+    .trail-dot {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: fadeOut 1s linear forwards;
+    }
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: scale(2);
+      }
     }
     .fade-in {
       animation: fadeIn 2s ease-out forwards;
@@ -38,7 +60,7 @@
 </head>
 <body>
 
-  <!-- Анимированный фон -->
+  <!-- Футуристическая анимация -->
   <div id="bg-animation">
     <lottie-player
       src="https://assets6.lottiefiles.com/packages/lf20_3vbOcw.json"
@@ -49,6 +71,9 @@
       style="width: 100%; height: 100%;">
     </lottie-player>
   </div>
+
+  <!-- Эффект следа за курсором -->
+  <div id="cursor-trail"></div>
 
   <!-- Основной контент -->
   <main class="flex flex-col items-center justify-center min-h-screen text-center px-6 fade-in">
@@ -66,7 +91,7 @@
   <!-- Раздел О Aaliyah -->
   <section class="px-6 py-20 bg-opacity-10 backdrop-blur-lg fade-in">
     <div class="max-w-3xl mx-auto text-center">
-      <h2 class="text-3xl font-bold mb-6 text-white">Кто такая Aaliyah?</h2>
+      <h2 class="text-3xl font-bold mb-6">Кто такая Aaliyah?</h2>
       <p class="text-gray-400 text-lg leading-relaxed">
         Aaliyah — это не просто бот. Это уникальный искусственный интеллект с эмоциональной адаптацией, возможностью вести глубокие разговоры и обучаться в процессе взаимодействия. Она — твой компаньон в цифровом мире будущего.
       </p>
@@ -78,14 +103,20 @@
     © 2025 Aaliyah AI. Все права защищены.
   </footer>
 
-  <!-- Параллакс эффект -->
+  <!-- Скрипт для эффекта следа за курсором -->
   <script>
-    document.addEventListener('mousemove', (event) => {
-      const { clientX, clientY } = event;
-      const x = (clientX / window.innerWidth - 0.5) * 10;
-      const y = (clientY / window.innerHeight - 0.5) * 10;
-      const bg = document.getElementById('bg-animation');
-      bg.style.transform = `translate(${x}px, ${y}px)`;
+    const trailContainer = document.getElementById('cursor-trail');
+
+    document.addEventListener('mousemove', (e) => {
+      const dot = document.createElement('div');
+      dot.classList.add('trail-dot');
+      dot.style.left = `${e.clientX}px`;
+      dot.style.top = `${e.clientY}px`;
+      trailContainer.appendChild(dot);
+
+      setTimeout(() => {
+        dot.remove();
+      }, 1000);
     });
   </script>
 

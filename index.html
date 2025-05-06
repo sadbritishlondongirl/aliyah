@@ -1,102 +1,135 @@
 <!DOCTYPE html>
-<html lang="en" class="bg-black text-white">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aaliyah AI</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body, html {
+    html, body {
       margin: 0;
       padding: 0;
+      height: 100%;
+      background: black;
       overflow: hidden;
-      background-color: black;
+      cursor: none;
     }
-    canvas#ai-bg {
-      position: fixed;
+    canvas {
+      display: block;
+      position: absolute;
       top: 0;
       left: 0;
-      z-index: -1;
+      z-index: 0;
+    }
+    #content {
+      position: relative;
+      z-index: 1;
+      color: white;
+      text-align: center;
+      top: 40%;
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      font-size: 3em;
+      letter-spacing: 2px;
+    }
+    p {
+      font-size: 1.2em;
+      color: #ccc;
     }
   </style>
 </head>
 <body>
-  <canvas id="ai-bg"></canvas>
-
-  <main class="flex flex-col items-center justify-center h-screen text-center">
-    <h1 class="text-5xl font-bold tracking-widest mb-6">Aaliyah AI</h1>
-    <p class="text-gray-400 max-w-xl">Next-gen artificial intelligence for a smarter, darker tomorrow.</p>
-  </main>
+  <canvas id="particles"></canvas>
+  <canvas id="fog"></canvas>
+  <div id="content">
+    <h1>Aaliyah AI</h1>
+    <p>Intelligence in the Shadows</p>
+  </div>
 
   <script>
-    const canvas = document.getElementById("ai-bg");
-    const ctx = canvas.getContext("2d");
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
+    // Particle background
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let particlesArray;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-    const center = { x: width / 2, y: height / 2 };
-    let mouse = { x: center.x, y: center.y };
-
-    window.addEventListener("mousemove", e => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    });
-
-    function drawEye() {
-      ctx.clearRect(0, 0, width, height);
-
-      const dx = mouse.x - center.x;
-      const dy = mouse.y - center.y;
-      const angle = Math.atan2(dy, dx);
-
-      // Outer circle
-      ctx.beginPath();
-      ctx.arc(center.x, center.y, 120, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(0, 255, 159, 0.4)";
-      ctx.lineWidth = 4;
-      ctx.stroke();
-
-      // Mid pulsating ring
-      const pulse = 100 + Math.sin(Date.now() * 0.002) * 5;
-      ctx.beginPath();
-      ctx.arc(center.x, center.y, pulse, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(0, 255, 159, 0.2)";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      // Iris (moves with mouse)
-      const irisX = center.x + Math.cos(angle) * 30;
-      const irisY = center.y + Math.sin(angle) * 30;
-      ctx.beginPath();
-      ctx.arc(irisX, irisY, 20, 0, Math.PI * 2);
-      ctx.fillStyle = "#00ff9f";
-      ctx.fill();
-
-      // Pupil
-      ctx.beginPath();
-      ctx.arc(irisX, irisY, 8, 0, Math.PI * 2);
-      ctx.fillStyle = "#000";
-      ctx.fill();
-
-      // Eye glow
-      const gradient = ctx.createRadialGradient(irisX, irisY, 5, irisX, irisY, 60);
-      gradient.addColorStop(0, "rgba(0,255,159,0.3)");
-      gradient.addColorStop(1, "rgba(0,255,159,0)");
-      ctx.beginPath();
-      ctx.fillStyle = gradient;
-      ctx.arc(irisX, irisY, 60, 0, Math.PI * 2);
-      ctx.fill();
-
-      requestAnimationFrame(drawEye);
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 1;
+        this.speedX = Math.random() * 0.6 - 0.3;
+        this.speedY = Math.random() * 0.6 - 0.3;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+        if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+      }
+      draw() {
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
 
-    drawEye();
+    function initParticles() {
+      particlesArray = [];
+      for (let i = 0; i < 100; i++) {
+        particlesArray.push(new Particle());
+      }
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particlesArray.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+
+    initParticles();
+    animateParticles();
+
+    // Fog trail effect
+    const fogCanvas = document.getElementById('fog');
+    const fogCtx = fogCanvas.getContext('2d');
+    fogCanvas.width = window.innerWidth;
+    fogCanvas.height = window.innerHeight;
+
+    let mouse = { x: 0, y: 0 };
+
+    function drawFog(x, y) {
+      fogCtx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+      fogCtx.beginPath();
+      fogCtx.arc(x, y, 50, 0, Math.PI * 2);
+      fogCtx.fill();
+    }
+
+    function fadeFog() {
+      fogCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      fogCtx.fillRect(0, 0, fogCanvas.width, fogCanvas.height);
+      requestAnimationFrame(fadeFog);
+    }
+
+    window.addEventListener('mousemove', e => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      drawFog(mouse.x, mouse.y);
+    });
+
+    fadeFog();
 
     window.addEventListener('resize', () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-      center.x = width / 2;
-      center.y = height / 2;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      fogCanvas.width = window.innerWidth;
+      fogCanvas.height = window.innerHeight;
+      initParticles();
     });
   </script>
 </body>

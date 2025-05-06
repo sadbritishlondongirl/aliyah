@@ -5,100 +5,103 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aaliyah AI</title>
   <style>
-    html, body {
+    * {
       margin: 0;
       padding: 0;
-      overflow: hidden;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body, html {
       height: 100%;
-      background: black;
-      font-family: 'Segoe UI', sans-serif;
-      color: white;
+      overflow: hidden;
+      background-color: #ffffff;
+      color: #000;
     }
 
     canvas {
-      position: fixed;
+      position: absolute;
       top: 0;
       left: 0;
       z-index: -1;
     }
 
-    .content {
+    header {
       position: relative;
-      z-index: 10;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
       text-align: center;
-      padding: 2rem;
+      padding-top: 20vh;
     }
 
-    .logo {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      width: 48px;
-      height: 48px;
-      opacity: 0.9;
+    header img {
+      width: 80px;
+      height: 80px;
     }
 
     h1 {
-      font-size: 3rem;
-      margin-bottom: 0.5rem;
-      letter-spacing: 0.1em;
+      font-size: 3em;
+      margin-top: 1rem;
     }
 
     p {
-      font-size: 1.2rem;
-      max-width: 600px;
-      opacity: 0.75;
+      font-size: 1.2em;
+      margin-top: 0.5rem;
     }
   </style>
 </head>
 <body>
-  <canvas id="background"></canvas>
-  <img src="icon.png" alt="Aaliyah AI Logo" class="logo" />
-  <div class="content">
+  <canvas id="bg"></canvas>
+  <header>
+    <img src="icon.png" alt="Aaliyah AI Logo">
     <h1>Aaliyah AI</h1>
-    <p>Intelligence crafted in shadow. Precision, power, and elegance — redefined.</p>
-  </div>
+    <p>Intelligence. Elegance. Simplicity.</p>
+  </header>
 
   <script>
-    const canvas = document.getElementById('background');
+    // Pixel-style background animation
+    const canvas = document.getElementById('bg');
     const ctx = canvas.getContext('2d');
+    
+    let width, height;
+    let pixels = [];
+    const pixelSize = 6;
+    const density = 0.08; // density of animated pixels
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const columns = canvas.width / 20;
-    const drops = Array(Math.floor(columns)).fill(1);
-
-    function draw() {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = '#00ffcc'; // Aqua-glow color
-      ctx.font = '16px monospace';
-
-      for (let i = 0; i < drops.length; i++) {
-        const char = String.fromCharCode(0x30A0 + Math.random() * 96); // Katakana-like
-        ctx.fillText(char, i * 20, drops[i] * 20);
-
-        if (drops[i] * 20 > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
-
-        drops[i]++;
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      pixels = [];
+      const cols = Math.floor(width / pixelSize);
+      const rows = Math.floor(height / pixelSize);
+      for (let i = 0; i < cols * rows * density; i++) {
+        pixels.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          size: pixelSize,
+          opacity: Math.random() * 0.5 + 0.2
+        });
       }
     }
 
-    setInterval(draw, 50);
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      for (let pixel of pixels) {
+        pixel.x += pixel.vx;
+        pixel.y += pixel.vy;
 
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    });
+        if (pixel.x < 0 || pixel.x > width) pixel.vx *= -1;
+        if (pixel.y < 0 || pixel.y > height) pixel.vy *= -1;
+
+        ctx.fillStyle = `rgba(0, 0, 0, ${pixel.opacity})`;
+        ctx.fillRect(pixel.x, pixel.y, pixel.size, pixel.size);
+      }
+      requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    animate();
   </script>
 </body>
 </html>

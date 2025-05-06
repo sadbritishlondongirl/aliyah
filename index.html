@@ -34,57 +34,69 @@
     let width = canvas.width = window.innerWidth;
     let height = canvas.height = window.innerHeight;
 
-    const particles = [];
-    const numParticles = 100;
+    const center = { x: width / 2, y: height / 2 };
+    let mouse = { x: center.x, y: center.y };
 
-    class Particle {
-      constructor() {
-        this.reset();
-      }
+    window.addEventListener("mousemove", e => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
 
-      reset() {
-        this.x = Math.random() * width;
-        this.y = Math.random() * height;
-        this.radius = Math.random() * 2 + 1;
-        this.speed = Math.random() * 0.5 + 0.2;
-        this.alpha = Math.random() * 0.5 + 0.2;
-        this.angle = Math.random() * 2 * Math.PI;
-      }
+    function drawEye() {
+      ctx.clearRect(0, 0, width, height);
 
-      update() {
-        this.y -= this.speed;
-        if (this.y < 0) this.y = height;
-      }
+      const dx = mouse.x - center.x;
+      const dy = mouse.y - center.y;
+      const angle = Math.atan2(dy, dx);
 
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0, 255, 159, ${this.alpha})`;
-        ctx.fill();
-      }
+      // Outer circle
+      ctx.beginPath();
+      ctx.arc(center.x, center.y, 120, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(0, 255, 159, 0.4)";
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      // Mid pulsating ring
+      const pulse = 100 + Math.sin(Date.now() * 0.002) * 5;
+      ctx.beginPath();
+      ctx.arc(center.x, center.y, pulse, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(0, 255, 159, 0.2)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Iris (moves with mouse)
+      const irisX = center.x + Math.cos(angle) * 30;
+      const irisY = center.y + Math.sin(angle) * 30;
+      ctx.beginPath();
+      ctx.arc(irisX, irisY, 20, 0, Math.PI * 2);
+      ctx.fillStyle = "#00ff9f";
+      ctx.fill();
+
+      // Pupil
+      ctx.beginPath();
+      ctx.arc(irisX, irisY, 8, 0, Math.PI * 2);
+      ctx.fillStyle = "#000";
+      ctx.fill();
+
+      // Eye glow
+      const gradient = ctx.createRadialGradient(irisX, irisY, 5, irisX, irisY, 60);
+      gradient.addColorStop(0, "rgba(0,255,159,0.3)");
+      gradient.addColorStop(1, "rgba(0,255,159,0)");
+      ctx.beginPath();
+      ctx.fillStyle = gradient;
+      ctx.arc(irisX, irisY, 60, 0, Math.PI * 2);
+      ctx.fill();
+
+      requestAnimationFrame(drawEye);
     }
 
-    for (let i = 0; i < numParticles; i++) {
-      particles.push(new Particle());
-    }
-
-    function animate() {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
-      ctx.fillRect(0, 0, width, height);
-
-      particles.forEach(p => {
-        p.update();
-        p.draw();
-      });
-
-      requestAnimationFrame(animate);
-    }
-
-    animate();
+    drawEye();
 
     window.addEventListener('resize', () => {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
+      center.x = width / 2;
+      center.y = height / 2;
     });
   </script>
 </body>
